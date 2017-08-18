@@ -1,12 +1,17 @@
 console.log('KEYS are loaded');
 
 exports.twitterKeys = {
-  consumer_key: 'yjw6r8LwrMghavx3zlQWqH66S',
-  consumer_secret: 'avbdQr6mFRN2RA4Ak8eBiKbxsAMUIIGNprFAEzhNTKPkONLUcU',
-  access_token_key: '898433456530575360-pDNVY3ms9C6D1bFuLIJdqfyq4v0MHS9',
-  access_token_secret: 'NushhbJg1lUrcEivhgV9gcBnS269jq4ss5tsPlUUB83FF'
+  consumer_key: process.env.TWITTER_CONSUMER_KEY,
+  consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
+  access_token_key: process.env.TWITTER_ACCESS_TOKEN_KEY,
+  access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET
 }
 
 exports.omdbKey = {
-	api_key: '40e9cece'
+	api_key: process.env.OMDB_API_KEY
+}
+
+exports.spotifyKeys = {
+	id: process.env.SPOTIFY_ID,
+	secret: process.env.SPOTIFY_SECRET
 }
