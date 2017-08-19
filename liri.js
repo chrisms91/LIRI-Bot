@@ -1,7 +1,4 @@
-// Load keys
-var KEYS = require('./keys.js');
-
-// Load npm packages
+// Load npm request packages
 var request = require('request');
 
 // Initialize spotify api
@@ -9,8 +6,8 @@ var request = require('request');
 var Spotify = require('node-spotify-api');
  
 var spotify = new Spotify({
-  id: KEYS.spotifyKeys.id,
-  secret: KEYS.spotifyKeys.secret
+  id: process.env.SPOTIFY_ID,
+  secret: process.env.SPOTIFY_SECRET
 });
 
 // Initialize twitter api
@@ -18,10 +15,10 @@ var spotify = new Spotify({
 var Twitter = require('twitter');
  
 var client = new Twitter({
-  consumer_key: KEYS.twitterKeys.consumer_key,
-  consumer_secret: KEYS.twitterKeys.consumer_secret,
-  access_token_key: KEYS.twitterKeys.access_token_key,
-  access_token_secret: KEYS.twitterKeys.access_token_secret
+  consumer_key: process.env.TWITTER_CONSUMER_KEY,
+  consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
+  access_token_key: process.env.TWITTER_ACCESS_TOKEN_KEY,
+  access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET
 });
 
 // Grab command line
@@ -53,9 +50,26 @@ switch (command) {
 		break;
 }
 
-// display last 20 tweets
+// display my last 20 tweets
 function myTweets() {
-	console.log('myTweets()');
+	var params = {screen_name: 'zzang_minsoo', count: 20}
+	client.get('statuses/user_timeline', params, function(error, tweets, response) {
+
+		if (!error) {
+			
+			for(var i=0; i<tweets.length; i++) {
+
+				var tweet = tweets[i];
+				var dateParsed = tweet.created_at.split('+')[0];
+
+				console.log(' ');
+				console.log(tweet.user.name + ' @' + tweet.user.screen_name + ' | ' + dateParsed);
+				console.log(tweet.text);
+				console.log(' ');
+
+			}
+		}
+	});
 }
 
 function spotifyThis() {
@@ -101,9 +115,7 @@ function movieThis() {
 		
 		} 
 
-	})
-
-
+	});
 }
 
 function randomThing() {
