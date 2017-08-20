@@ -63,12 +63,10 @@ function myTweets() {
 			for(var i=0; i<tweets.length; i++) {
 
 				var tweet = tweets[i];
-				var timezone = moment(tweet.created_at).tz('America/Los_Angeles').format('YYYYMMDD hh:mm:ss')
-				console.log(timezone);
-				var dateParsed = tweet.created_at.split('+')[0];
+				var timezoneParsed = moment(tweet.created_at).tz('America/Los_Angeles').format('dddd MMM D hh:mm:ss')
 
 				console.log(' ');
-				console.log(tweet.user.name + ' @' + tweet.user.screen_name + ' | ' + dateParsed);
+				console.log(tweet.user.name + ' @' + tweet.user.screen_name + ' | ' + timezoneParsed);
 				console.log(tweet.text);
 				console.log(' ');
 
