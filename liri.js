@@ -56,20 +56,29 @@ switch (command) {
 // display my last 20 tweets
 function myTweets() {
 
+	//parameters for get request
 	var params = {screen_name: 'zzang_minsoo', count: 20}
+
+	//parameters for moment
 	var dateFormat = 'dddd MMM D hh:mm:ss';
 	var region = 'America/Los_Angeles';
 
-	// get r
+	// get recent 20 tweets in my timeline
 	client.get('statuses/user_timeline', params, function(error, tweets, response) {
 
+		// If there is no error
 		if (!error) {
 			
 			for(var i=0; i<tweets.length; i++) {
 
+				// twitter data object
 				var tweet = tweets[i];
+
+				// change twitter time to our timezone
 				var timezoneParsed = moment.tz(tweet.created_at, dateFormat, region);
 
+
+				// Display Tweets
 				console.log(' ');
 				console.log(tweet.user.name + ' @' + tweet.user.screen_name + ' | ' + timezoneParsed);
 				console.log(tweet.text);
@@ -105,8 +114,10 @@ function movieThis() {
 		// If the request is successful
 		if (!err && response.statusCode === 200) {
 
+			// Movie data object
 			var movieData = JSON.parse(body);
 
+			// Display movie info
 			console.log('======================================= OMDB ============================================');
 			console.log(' ')
 			console.log('*  Movie Title:              ' + movieData.Title);
