@@ -55,7 +55,12 @@ switch (command) {
 
 // display my last 20 tweets
 function myTweets() {
+
 	var params = {screen_name: 'zzang_minsoo', count: 20}
+	var dateFormat = 'dddd MMM D hh:mm:ss';
+	var region = 'America/Los_Angeles';
+
+	// get r
 	client.get('statuses/user_timeline', params, function(error, tweets, response) {
 
 		if (!error) {
@@ -63,7 +68,7 @@ function myTweets() {
 			for(var i=0; i<tweets.length; i++) {
 
 				var tweet = tweets[i];
-				var timezoneParsed = moment(tweet.created_at).tz('America/Los_Angeles').format('dddd MMM D hh:mm:ss')
+				var timezoneParsed = moment.tz(tweet.created_at, dateFormat, region);
 
 				console.log(' ');
 				console.log(tweet.user.name + ' @' + tweet.user.screen_name + ' | ' + timezoneParsed);
