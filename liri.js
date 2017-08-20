@@ -1,6 +1,9 @@
 // Load npm request packages
 var request = require('request');
 
+// Load npm moment packages
+var moment = require('moment-timezone');
+
 // Initialize spotify api
 // https://www.npmjs.com/package/node-spotify-api
 var Spotify = require('node-spotify-api');
@@ -60,6 +63,8 @@ function myTweets() {
 			for(var i=0; i<tweets.length; i++) {
 
 				var tweet = tweets[i];
+				var timezone = moment(tweet.created_at).tz('America/Los_Angeles').format('YYYYMMDD hh:mm:ss')
+				console.log(timezone);
 				var dateParsed = tweet.created_at.split('+')[0];
 
 				console.log(' ');

@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/chrisms91/LIRI-Bot#readme",
   "dependencies": {
+    "moment": "^2.18.1",
+    "moment-timezone": "^0.5.13",
     "node-spotify-api": "^1.0.7",
     "request": "^2.81.0",
     "twitter": "^1.7.1"
