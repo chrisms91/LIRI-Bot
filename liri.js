@@ -90,7 +90,50 @@ function myTweets() {
 }
 
 function spotifyThis() {
-	console.log('spotify-this-song');
+	/*
+		- Artist(s)
+		- The song's name
+		- A preview link of the song from Spotify
+		- The album that the song is from
+	*/
+
+	var songTitle = title;
+	var params = { type: 'track', query: songTitle, limit: 2 };
+
+	spotify.search( params, function (err, data) {
+
+		if (err) {
+			console.log('Error occurred: ' + err );
+			return;
+		}
+
+		var trackData = data.tracks.items;
+
+		for ( var i=0; i<trackData.length; i++ ) {
+
+			var artists = '';
+			var previewURL = '';
+			var extendedURL = '';
+
+			// Concatenates to artists string
+			for ( var j=0; j<trackData[i].artists.length; j++ ) {
+				artists = artists + ', ' + trackData[i].artists[j].name
+			}
+
+			if (trackData[i].preview_url === null) {
+				previewURL = 'Not Available';
+			} else {
+				previewURL = trackData[i].preview_url;
+			}
+
+			// console.log(trackData[i])
+			console.log(' ');
+			// remove first two ', ' from artists
+			console.log('Artist(s):  ' + artists.substr(2));
+			console.log("The song's name:  " + trackData[i].name);
+			console.log('Preview URL:  ' + previewURL);
+		}
+	})
 }
 
 function movieThis() {
