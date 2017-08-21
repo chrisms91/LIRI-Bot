@@ -98,42 +98,59 @@ function spotifyThis() {
 	*/
 
 	var songTitle = title;
-	var params = { type: 'track', query: songTitle, limit: 2 };
 
-	spotify.search( params, function (err, data) {
+	if (songTitle === undefined) {
 
-		if (err) {
-			console.log('Error occurred: ' + err );
-			return;
-		}
+		//By Default, "The Sign" by Ace of Base
+		
+		spotify.request('https://api.spotify.com/v1/tracks/0hrBpAOgrt8RXigk83LLNE')
+		.then (function (data) {
+			console.log(data);
+		})
+		.catch (function (err) {
+			console.error('Error occurred: ' + err); 
+		});
 
-		var trackData = data.tracks.items;
+	} else {
 
-		for ( var i=0; i<trackData.length; i++ ) {
+		var params = { type: 'track', query: songTitle, limit: 10 };
+		spotify.search( params, function (err, data) {
 
-			var artists = '';
-			var previewURL = '';
-			var extendedURL = '';
-
-			// Concatenates to artists string
-			for ( var j=0; j<trackData[i].artists.length; j++ ) {
-				artists = artists + ', ' + trackData[i].artists[j].name
+			if (err) {
+				console.log('Error occurred: ' + err );
+				return;
 			}
 
-			if (trackData[i].preview_url === null) {
-				previewURL = 'Not Available';
-			} else {
-				previewURL = trackData[i].preview_url;
-			}
+			var trackData = data.tracks.items;
 
-			// console.log(trackData[i])
-			console.log(' ');
-			// remove first two ', ' from artists
-			console.log('Artist(s):  ' + artists.substr(2));
-			console.log("The song's name:  " + trackData[i].name);
-			console.log('Preview URL:  ' + previewURL);
-		}
-	})
+			for ( var i=0; i<trackData.length; i++ ) {
+
+				var artists = '';
+				var previewURL = '';
+				var extendedURL = '';
+
+				// Concatenates to artists string
+				for ( var j=0; j<trackData[i].artists.length; j++ ) {
+					artists = artists + ', ' + trackData[i].artists[j].name
+				}
+
+				if (trackData[i].preview_url === null) {
+					previewURL = 'Not Available';
+				} else {
+					previewURL = trackData[i].preview_url;
+				}
+
+				// console.log(trackData[i])
+				console.log(' ');
+				// remove first two ', ' from artists
+				console.log('*  Artist(s):  ' + artists.substr(2));
+				console.log("*  Title:  " + trackData[i].name);
+				console.log('*  Preview URL:  ' + previewURL);
+				console.log('*  Album:  ' + trackData[i].album.name);
+				console.log(' ');
+			}
+		})
+	}
 }
 
 function movieThis() {
@@ -147,7 +164,7 @@ function movieThis() {
 	var movieTitleParsed = movieTitle.split(" ").join("+").toLowerCase();
 
 	// build query URL
-	var queryUrl = "http://www.omdbapi.com/?t=" + movieTitleParsed + "&y=&plot=short&apikey=" + KEYS.omdbKey.api_key;
+	var queryUrl = "http://www.omdbapi.com/?t=" + movieTitleParsed + "&y=&plot=short&apikey=" + process.env.OMDB_API_KEY;
 
 	console.log('Movie Title: ' + movieTitle);
 	console.log('Query URL: ' + queryUrl);
@@ -159,6 +176,10 @@ function movieThis() {
 
 			// Movie data object
 			var movieData = JSON.parse(body);
+			var consoleWidth = process.stdout.columns;
+			var chunkSize = consoleWidth-31;
+			
+			var plot = dividePlot(movieData.Plot, chunkSize);
 
 			// Display movie info
 			console.log('======================================= OMDB ============================================');
@@ -169,7 +190,7 @@ function movieThis() {
 			console.log('*  Rotten Tomatoes Rating:   ' + movieData.Ratings.find( x => x.Source === 'Rotten Tomatoes').Value);
 			console.log('*  Country:                  ' + movieData.Country);
 			console.log('*  Laguage:                  ' + movieData.Laguage);
-			console.log('*  Plot:                     ' + movieData.Plot);
+			console.log('*  Plot:                     ' + plot);
 			console.log('*  Actors:                   ' + movieData.Actors);
 			console.log(' ');
 			console.log('==========================================================================================');
@@ -178,6 +199,22 @@ function movieThis() {
 		} 
 
 	});
+}
+
+// Divide Plot depends on console width and display in new line.
+// So it displays plot with clean structure in small console size.
+function dividePlot (plot, size) {
+
+	var numChunks = Math.ceil( plot.length / size);
+	var plotArray = [];
+	var newline = '                               ';
+	for (var i=0, o=0; i<numChunks; i++, o += size) {
+		plotArray[i] = plot.substr(o, size);
+	}
+
+	var display = plotArray.join(newline);
+
+	return display;
 }
 
 function randomThing() {
