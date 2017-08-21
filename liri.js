@@ -1,21 +1,16 @@
-// Load npm request packages
+
+// Load npm packages
 var request = require('request');
-
-// Load npm moment packages
+var fs = require('fs');
 var moment = require('moment-timezone');
-
-// Initialize spotify api
-// https://www.npmjs.com/package/node-spotify-api
 var Spotify = require('node-spotify-api');
+var Twitter = require('twitter');
+var exec = require('child_process').exec;
  
 var spotify = new Spotify({
   id: process.env.SPOTIFY_ID,
   secret: process.env.SPOTIFY_SECRET
 });
-
-// Initialize twitter api
-// https://www.npmjs.com/package/twitter
-var Twitter = require('twitter');
  
 var client = new Twitter({
   consumer_key: process.env.TWITTER_CONSUMER_KEY,
@@ -102,10 +97,22 @@ function spotifyThis() {
 	if (songTitle === undefined) {
 
 		//By Default, "The Sign" by Ace of Base
-		
 		spotify.request('https://api.spotify.com/v1/tracks/0hrBpAOgrt8RXigk83LLNE')
 		.then (function (data) {
+
 			console.log(data);
+			var artist = data.artists[0].name;
+			var title = data.name;
+			var album = data.album.name;
+			var previewLink = data.preview_url;
+
+			console.log(' ');
+			console.log('*  Artist(s):  ' + artist);
+			console.log('*  Title:  ' + title);
+			console.log('*  Preview URL:  ' + previewLink);
+			console.log('*  Album:  ' + album);
+			console.log(' ');
+
 		})
 		.catch (function (err) {
 			console.error('Error occurred: ' + err); 
@@ -159,18 +166,34 @@ function spotifyThis() {
 function movieThis() {
 
 	console.log(' ');
-
-	// store console input in variable
 	var movieTitle = title;
 
-	// parse it to use in search query
-	var movieTitleParsed = movieTitle.split(" ").join("+").toLowerCase();
+	// If the user doesn't type a movie in, the program will output data for the movie 'Mr. Nobody.'
+	if (movieTitle === undefined) {
 
-	// build query URL
-	var queryUrl = "http://www.omdbapi.com/?t=" + movieTitleParsed + "&y=&plot=short&apikey=" + process.env.OMDB_API_KEY;
+		var movieTitle = 'Mr Nobody'
 
-	console.log('Movie Title: ' + movieTitle);
-	console.log('Query URL: ' + queryUrl);
+		// parse it to use in search query
+		var movieTitleParsed = movieTitle.split(" ").join("+").toLowerCase();
+
+		// build query URL
+		var queryUrl = "http://www.omdbapi.com/?t=" + movieTitleParsed + "&y=&plot=short&apikey=" + process.env.OMDB_API_KEY;
+		console.log('Query URL:  ' + queryUrl);
+
+	// Else search for user input
+	} else {
+
+		// store console input in variable
+		movieTitle = title;
+
+		// parse it to use in search query
+		var movieTitleParsed = movieTitle.split(" ").join("+").toLowerCase();
+
+		// build query URL
+		var queryUrl = "http://www.omdbapi.com/?t=" + movieTitleParsed + "&y=&plot=short&apikey=" + process.env.OMDB_API_KEY;
+		console.log('Query URL:  ' + queryUrl);
+
+	}
 
 	request(queryUrl, function (err, response, body) {
 
@@ -197,7 +220,6 @@ function movieThis() {
 			console.log(' ');
 
 		} 
-
 	});
 }
 
@@ -217,6 +239,32 @@ function dividePlot (plot, size) {
 	return display;
 }
 
+// Execute cmd read from random.txt
 function randomThing() {
-	console.log('do-what-it-says');
+
+	fs.readFile('random.txt', 'utf8', function(err, data) {
+
+		if (err) {
+			console.log('Error occurred: ' + err );
+			return;
+		}
+
+		var cmd = 'node liri ' + data;
+
+		console.log(' ');
+		console.log('Execeuted Command:  ' + cmd);
+		console.log(' ');
+
+		// Execute child process
+		var child = exec(cmd, function (err, stdout, stderr) {
+
+			console.log('stdout: ' + stdout);
+    		console.log('stderr: ' + stderr);
+
+    		if (err !== null) {
+    			console.log('exec error: ' + err);
+    		}
+
+		});
+	});
 }
