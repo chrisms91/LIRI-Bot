@@ -77,7 +77,6 @@ function myTweets() {
 				// change twitter time to our timezone
 				var timezoneParsed = moment.tz(tweet.created_at, dateFormat, region);
 
-
 				// Display Tweets
 				console.log(' ');
 				console.log(tweet.user.name + ' @' + tweet.user.screen_name + ' | ' + timezoneParsed);
@@ -99,6 +98,7 @@ function spotifyThis() {
 
 	var songTitle = title;
 
+	// If no song is provided
 	if (songTitle === undefined) {
 
 		//By Default, "The Sign" by Ace of Base
@@ -116,6 +116,7 @@ function spotifyThis() {
 		var params = { type: 'track', query: songTitle, limit: 10 };
 		spotify.search( params, function (err, data) {
 
+			// check error.
 			if (err) {
 				console.log('Error occurred: ' + err );
 				return;
@@ -134,6 +135,7 @@ function spotifyThis() {
 					artists = artists + ', ' + trackData[i].artists[j].name
 				}
 
+				// Some data doesn't have previewURL...	
 				if (trackData[i].preview_url === null) {
 					previewURL = 'Not Available';
 				} else {
@@ -148,6 +150,7 @@ function spotifyThis() {
 				console.log('*  Preview URL:  ' + previewURL);
 				console.log('*  Album:  ' + trackData[i].album.name);
 				console.log(' ');
+
 			}
 		})
 	}
@@ -182,7 +185,6 @@ function movieThis() {
 			var plot = dividePlot(movieData.Plot, chunkSize);
 
 			// Display movie info
-			console.log('======================================= OMDB ============================================');
 			console.log(' ')
 			console.log('*  Movie Title:              ' + movieData.Title);
 			console.log('*  Released:                 ' + movieData.Released);
@@ -193,9 +195,7 @@ function movieThis() {
 			console.log('*  Plot:                     ' + plot);
 			console.log('*  Actors:                   ' + movieData.Actors);
 			console.log(' ');
-			console.log('==========================================================================================');
-			console.log(' ')
-		
+
 		} 
 
 	});
