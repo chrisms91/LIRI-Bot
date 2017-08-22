@@ -63,20 +63,35 @@ function myTweets() {
 
 		// If there is no error
 		if (!error) {
+
+			var cmd = 'Command:  my-tweets';
 			
 			for(var i=0; i<tweets.length; i++) {
 
 				// twitter data object
 				var tweet = tweets[i];
 
+				// Change to javascript date
+				var jsDate = new Date(tweet.created_at);
+
 				// change twitter time to our timezone
-				var timezoneParsed = moment.tz(tweet.created_at, dateFormat, region);
+				var tweetTime = moment(jsDate).format(dateFormat);
+
+				var counter = i+1;
 
 				// Display Tweets
 				console.log(' ');
-				console.log(tweet.user.name + ' @' + tweet.user.screen_name + ' | ' + timezoneParsed);
+				console.log('#' + counter + '\n' + tweet.user.name + ' @' + tweet.user.screen_name + ' | ' + tweetTime);
 				console.log(tweet.text);
 				console.log(' ');
+
+				var log = '  \n' + cmd + '\n' + '#' + counter + '\n'+ tweet.user.name + ' @' + tweet.user.screen_name + ' | ' + tweetTime + '\n' + tweet.text + '\n';
+
+				// Save into file
+				fs.appendFile('log.txt', log, (err) => {
+					if(err) throw err;
+					
+				});
 
 			}
 		}
@@ -84,12 +99,6 @@ function myTweets() {
 }
 
 function spotifyThis() {
-	/*
-		- Artist(s)
-		- The song's name
-		- A preview link of the song from Spotify
-		- The album that the song is from
-	*/
 
 	var songTitle = title;
 
@@ -167,6 +176,7 @@ function movieThis() {
 
 	console.log(' ');
 	var movieTitle = title;
+	var queryUrl = '';
 
 	// If the user doesn't type a movie in, the program will output data for the movie 'Mr. Nobody.'
 	if (movieTitle === undefined) {
@@ -177,7 +187,7 @@ function movieThis() {
 		var movieTitleParsed = movieTitle.split(" ").join("+").toLowerCase();
 
 		// build query URL
-		var queryUrl = "http://www.omdbapi.com/?t=" + movieTitleParsed + "&y=&plot=short&apikey=" + process.env.OMDB_API_KEY;
+		queryUrl = "http://www.omdbapi.com/?t=" + movieTitleParsed + "&y=&plot=short&apikey=" + process.env.OMDB_API_KEY;
 		console.log('Query URL:  ' + queryUrl);
 
 	// Else search for user input
@@ -190,7 +200,7 @@ function movieThis() {
 		var movieTitleParsed = movieTitle.split(" ").join("+").toLowerCase();
 
 		// build query URL
-		var queryUrl = "http://www.omdbapi.com/?t=" + movieTitleParsed + "&y=&plot=short&apikey=" + process.env.OMDB_API_KEY;
+		queryUrl = "http://www.omdbapi.com/?t=" + movieTitleParsed + "&y=&plot=short&apikey=" + process.env.OMDB_API_KEY;
 		console.log('Query URL:  ' + queryUrl);
 
 	}
@@ -204,6 +214,9 @@ function movieThis() {
 			var movieData = JSON.parse(body);
 			var consoleWidth = process.stdout.columns;
 			var chunkSize = consoleWidth-31;
+			var imdbRating = movieData.Ratings.find( x => x.Source === 'Internet Movie Database').Value;
+			var rottenRating = movieData.Ratings.find( x => x.Source === 'Rotten Tomatoes').Value;
+
 			
 			var plot = dividePlot(movieData.Plot, chunkSize);
 
@@ -211,13 +224,24 @@ function movieThis() {
 			console.log(' ')
 			console.log('*  Movie Title:              ' + movieData.Title);
 			console.log('*  Released:                 ' + movieData.Released);
-			console.log('*  IMDB Rating:              ' + movieData.Ratings.find( x => x.Source === 'Internet Movie Database').Value);
-			console.log('*  Rotten Tomatoes Rating:   ' + movieData.Ratings.find( x => x.Source === 'Rotten Tomatoes').Value);
+			console.log('*  IMDB Rating:              ' + imdbRating);
+			console.log('*  Rotten Tomatoes Rating:   ' + rottenRating);
 			console.log('*  Country:                  ' + movieData.Country);
 			console.log('*  Laguage:                  ' + movieData.Laguage);
 			console.log('*  Plot:                     ' + plot);
 			console.log('*  Actors:                   ' + movieData.Actors);
 			console.log(' ');
+
+			var cmd = 'Command:  movie-this ' + '"' + title + '"';
+			
+			var log = '  \n' + cmd + '\n' + '*  Movie Title:              ' + movieData.Title + '\n' + '*  Released:                 ' + movieData.Released + '\n' + '*  IMDB Rating:              ' + imdbRating + '\n' + '*  Rotten Tomatoes Rating:   ' + rottenRating + '\n' + '*  Country:                  ' + movieData.Country + '\n' + '*  Laguage:                  ' + movieData.Laguage + '\n' + '*  Plot:                     ' + movieData.Plot + '\n' + '*  Actors:                   ' + movieData.Actors + '\n' + ' ';
+
+			// Save into file
+			fs.appendFile('log.txt', log, (err) => {
+				if(err) throw err;
+				console.log('log:  ' + log);
+				console.log('Successfully logged data in log.txt');
+			})
 
 		} 
 	});
