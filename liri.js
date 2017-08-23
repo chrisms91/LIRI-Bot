@@ -64,7 +64,8 @@ function myTweets() {
 		// If there is no error
 		if (!error) {
 
-			var cmd = 'Command:  my-tweets';
+			var cmd = '\n' +'======================================================================' +  '\n' + 'Command:  my-tweets' + '\n';
+			logText(cmd);
 			
 			for(var i=0; i<tweets.length; i++) {
 
@@ -85,13 +86,10 @@ function myTweets() {
 				console.log(tweet.text);
 				console.log(' ');
 
-				var log = '  \n' + cmd + '\n' + '#' + counter + '\n'+ tweet.user.name + ' @' + tweet.user.screen_name + ' | ' + tweetTime + '\n' + tweet.text + '\n';
+				var log = '\n' + '#' + counter + '\n'+ tweet.user.name + ' @' + tweet.user.screen_name + ' | ' + tweetTime + '\n' + tweet.text + '\n';
 
 				// Save into file
-				fs.appendFile('log.txt', log, (err) => {
-					if(err) throw err;
-					
-				});
+				logText(log);
 
 			}
 		}
@@ -109,7 +107,9 @@ function spotifyThis() {
 		spotify.request('https://api.spotify.com/v1/tracks/0hrBpAOgrt8RXigk83LLNE')
 		.then (function (data) {
 
-			console.log(data);
+			var cmd = '\n' +'======================================================================' +  '\n' + 'Command:  spotify-this-song' + '\n';
+			logText(cmd);
+
 			var artist = data.artists[0].name;
 			var title = data.name;
 			var album = data.album.name;
@@ -122,12 +122,18 @@ function spotifyThis() {
 			console.log('*  Album:  ' + album);
 			console.log(' ');
 
+			var log = '\n' + '*  Artist(s):  ' + artist + '\n' + '*  Title:  ' + title + '\n' + '*  Preview URL:  ' + previewLink + '\n' + '*  Album:  ' + album + '\n';
+			logText(log);
+
 		})
 		.catch (function (err) {
 			console.error('Error occurred: ' + err); 
 		});
 
 	} else {
+
+		var cmd = '\n' +'======================================================================' + '\n' + 'Command:  spotify-this-song ' + songTitle + '\n';
+		logText(cmd);
 
 		var params = { type: 'track', query: songTitle, limit: 10 };
 		spotify.search( params, function (err, data) {
@@ -166,6 +172,9 @@ function spotifyThis() {
 				console.log('*  Preview URL:  ' + previewURL);
 				console.log('*  Album:  ' + trackData[i].album.name);
 				console.log(' ');
+
+				var log = '\n' + '*  Artist(s):  ' + artists.substr(2) + '\n' + '*  Title:  ' + trackData[i].name + '\n' + '*  Preview URL:  ' + previewURL + '\n' + '*  Album:  ' + trackData[i].album.name + '\n';
+				logText(log);
 
 			}
 		})
@@ -234,14 +243,10 @@ function movieThis() {
 
 			var cmd = 'Command:  movie-this ' + '"' + title + '"';
 			
-			var log = '  \n' + cmd + '\n' + '*  Movie Title:              ' + movieData.Title + '\n' + '*  Released:                 ' + movieData.Released + '\n' + '*  IMDB Rating:              ' + imdbRating + '\n' + '*  Rotten Tomatoes Rating:   ' + rottenRating + '\n' + '*  Country:                  ' + movieData.Country + '\n' + '*  Laguage:                  ' + movieData.Laguage + '\n' + '*  Plot:                     ' + movieData.Plot + '\n' + '*  Actors:                   ' + movieData.Actors + '\n' + ' ';
+			var log = '\n' +'======================================================================' +  '  \n' + cmd + '\n' + '*  Movie Title:              ' + movieData.Title + '\n' + '*  Released:                 ' + movieData.Released + '\n' + '*  IMDB Rating:              ' + imdbRating + '\n' + '*  Rotten Tomatoes Rating:   ' + rottenRating + '\n' + '*  Country:                  ' + movieData.Country + '\n' + '*  Laguage:                  ' + movieData.Laguage + '\n' + '*  Plot:                     ' + movieData.Plot + '\n' + '*  Actors:                   ' + movieData.Actors + '\n' + ' ';
 
 			// Save into file
-			fs.appendFile('log.txt', log, (err) => {
-				if(err) throw err;
-				console.log('log:  ' + log);
-				console.log('Successfully logged data in log.txt');
-			})
+			logText(log);
 
 		} 
 	});
@@ -282,13 +287,24 @@ function randomThing() {
 		// Execute child process
 		var child = exec(cmd, function (err, stdout, stderr) {
 
+			var log ='\n' +'======================================================================' +  '\n' + cmd + '\n' +stdout;
 			console.log('stdout: ' + stdout);
     		console.log('stderr: ' + stderr);
+
+    		logText(log);
 
     		if (err !== null) {
     			console.log('exec error: ' + err);
     		}
 
+
 		});
 	});
+}
+
+function logText(str) {
+
+	fs.appendFile('log.txt', str, (err) => {
+		if(err) throw err;
+	})
 }
